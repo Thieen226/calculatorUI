@@ -18,8 +18,8 @@ struct ContentView: View {
     @State private var isClicked : Bool = false
     @State private var display = "0"
     @State private var isNumber : Bool = false
-    @State private var firstNum : Int = 0
-    @State private var secondNum : Int = 0
+    @State private var firstNum : String = ""
+    @State private var secondNum : String = ""
     var body: some View {
         Color.black.ignoresSafeArea().overlay(
             VStack {
@@ -36,7 +36,7 @@ struct ContentView: View {
                         ForEach(row, id: \.self) {char in
                             switch char{
                             case "=", "+", "-", "x", "÷" :
-                                Button(char, action: {operationCalc()})
+                                Button(char, action: {operationCalc(char)})
                                     .frame(width: 80, height: 80)
                                     .background(Color.orange)
                                     .cornerRadius(100)
@@ -73,13 +73,31 @@ struct ContentView: View {
             }
         )
     }
-    func operationCalc(){
-//        switch char{
-//        case "÷":
-//        case "x":
-//        case "-":
-//        case "+":
-//        }
+    func operationCalc(_ char : String){
+        switch char{
+        case "÷", "x", "-", "+":
+            firstNum = display
+            display = "0"
+        default:
+            break
+        }
+            
+        switch char{
+        case "÷" :
+            secondNum = display
+            divideNums(firstNum, secondNum)
+        case "-" :
+            secondNum = display
+            subtractNums(firstNum, secondNum)
+        case "x" :
+            secondNum = display
+            multiplyNums(firstNum, secondNum)
+        case "+" :
+            secondNum = display
+            addNums(firstNum, secondNum)
+        default: 
+            break
+        }
     }
     
     func manageBtn(_ char : String){
@@ -108,7 +126,26 @@ struct ContentView: View {
             }
         }
     }
-}
+    
+    func divideNums(_ firstNum : String, _ secondNum : String){
+        if let num1 = Double(firstNum), let num2 = Double(secondNum), num2 != 0{
+            display = String(num1/num2)
+        }
+            else{
+                display = "Error"
+            }
+        }
+    }
+    func subtractNums(_ firstNum : String, _ secondNum : String){
+        
+    }
+    
+    func multiplyNums(_ firstNum : String, _ secondNum : String){
+        
+    }
+    func addNums(_ firstNum : String, _ secondNum : String){
+        
+    }
 
 #Preview {
     ContentView()
