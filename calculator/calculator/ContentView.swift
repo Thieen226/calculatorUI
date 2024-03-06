@@ -34,24 +34,24 @@ struct ContentView: View {
                 ForEach(numsAndOperations, id: \.self){row in
                     HStack{
                         ForEach(row, id: \.self) {char in
-                            if char == "=" || char == "+" || char == "-" || char == "x" || char == "÷"{
+                            switch char{
+                            case "=", "+", "-", "x", "÷" :
                                 Button(char, action: {operationCalc()})
                                     .frame(width: 80, height: 80)
                                     .background(Color.orange)
                                     .cornerRadius(100)
                                     .foregroundColor(.white)
                                     .font(.system(size: 32))
-                            }
-                            else if char == "1" || char == "2" || char == "3" || char == "4" || char == "5" || char == "6" || char == "7" || char == "8" || char == "9" || char == "."{
-                                Button(char, action: {isNum = true; showNum()})
+            
+                            case "1"..."9", "." :
+                                Button(char, action: {manageBtn(char)})
                                     .frame(width: 80, height: 80)
                                     .background(Color(UIColor.darkGray))
                                     .cornerRadius(100)
                                     .foregroundColor(.white)
                                     .font(.system(size: 32))
-                            }
-                            else if char == "0"{
-                                Button(char, action: {isNumber = true; showNum()})
+                            case "0" :
+                                Button(char, action: {manageBtn(char)})
                                     .padding(.leading, 30)
                                     .frame(width: 170, height: 80, alignment: .leading)
                                     .background(Color(UIColor.darkGray))
@@ -59,9 +59,8 @@ struct ContentView: View {
                                     .foregroundColor(.white)
                                     .font(.system(size: 32))
                                     
-                            }
-                            else{
-                                Button(char, action: {showNum()})
+                            default:
+                                Button(char, action: {manageBtn(char)})
                                     .frame(width: 80, height: 80)
                                     .background(Color(UIColor.lightGray))
                                     .cornerRadius(100)
@@ -75,16 +74,37 @@ struct ContentView: View {
         )
     }
     func operationCalc(){
-        
+//        switch char{
+//        case "÷":
+//        case "x":
+//        case "-":
+//        case "+":
+//        }
     }
     
-    func showNum(_ char : String){
-        if char.isNumber{
-            if display == "0" || display == "."{
+    func manageBtn(_ char : String){
+        if let _ = Int(char){
+            if display == "0"{
                 display = char
             }
             else{
                 display += char
+            }
+        }
+        if char == "."{
+            display += char
+        }
+        else if char == "AC"{
+            display = "0"
+        }
+        else if char == "+/-" && display != "0"{
+            if let number = Int(display){
+                display = String(-number)
+            }
+        }
+        else if char == "%"{
+            if let num = Double(display){
+                display = String(num/100)
             }
         }
     }
