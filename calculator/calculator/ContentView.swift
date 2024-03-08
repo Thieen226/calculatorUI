@@ -16,7 +16,7 @@ struct ContentView: View {
         ["0", "." , "="]
     ]
     //create variables
-    @State private var isClicked : Bool = false
+    @State private var isClicked : String? = nil //keep track which button is clicked
     @State private var display = "0"
     @State private var firstNum : String = ""
     @State private var secondNum : String = ""
@@ -29,31 +29,43 @@ struct ContentView: View {
                 HStack{
                     Spacer()
                     Text(display)
-                        .padding(.trailing, 40)
+                        .padding(.trailing, 40) //make the 0 to the right of the display
                         .foregroundColor(.white)
                         .font(.system(size: display.count > 6 ? 78 : 88, weight: .light)) //if the number is more than 6 digits then decrease the size
+                        .lineLimit(1)
                 }
                 ForEach(numsAndOperations, id: \.self){row in //access the row in the 2D array
                     HStack{ //align the each row horizontally
                         ForEach(row, id: \.self) {char in //access the numbers and operations in the row
                             switch char{
                             case "=", "+", "-", "x", "÷" : //manage when the operation and equal signs are clicked
-                                Button(char, action: {operationCalc(char)})
+                                let isOperator = ["+", "-", "x", "÷"].contains(char) //check if the char is found in the array
+                                Button(char, action: {
+                                    operationCalc(char)
+                                    isClicked = char //change the isClicked to the button that is clicked
+                                })
                                     .frame(width: 80, height: 80)
-                                    .background(Color.orange)
+                                    .background(isClicked == char && isOperator ? Color.white : Color.orange) //if the clicked button is an operation then change the background to white
                                     .cornerRadius(100)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(isClicked == char && isOperator ? Color.orange : Color.white) //if the clicked button is an operation then change the font to orange
                                     .font(.system(size: 32))
+                                    .animation(.easeInOut(duration: 0.4), value: isClicked) //when isClicked changes value, animation will work
                                 
-                            case "1"..."9", "." : //manage when numbers and . are clicked
-                                Button(char, action: {manageBtn(char)})
+                            case "1"..."9", "." : //manage when numbers and "."
+                                Button(char, action: {
+                                    manageBtn(char)
+                                    isClicked = nil //reset the isClicked
+                                })
                                     .frame(width: 80, height: 80)
                                     .background(Color(UIColor.darkGray))
                                     .cornerRadius(100)
                                     .foregroundColor(.white)
                                     .font(.system(size: 32))
                             case "0" : //style 0 button differently
-                                Button(char, action: {manageBtn(char)})
+                                Button(char, action: {
+                                    manageBtn(char)
+                                    isClicked = nil
+                                })
                                     .padding(.leading, 30)
                                     .frame(width: 170, height: 80, alignment: .leading)
                                     .background(Color(UIColor.darkGray))
@@ -62,7 +74,10 @@ struct ContentView: View {
                                     .font(.system(size: 32))
                                 
                             default: //manage AC, +/- or % are clicked
-                                Button(char, action: {manageBtn(char)})
+                                Button(char, action: {
+                                    manageBtn(char)
+                                    isClicked = nil
+                                })
                                     .frame(width: 80, height: 80)
                                     .background(Color(UIColor.lightGray))
                                     .cornerRadius(100)
@@ -81,6 +96,7 @@ struct ContentView: View {
             operations = char
             firstNum = display
             display = "0"
+            
         default:
             secondNum = display
             manageOperations()
@@ -135,50 +151,48 @@ struct ContentView: View {
     
     func divideNums(_ firstNum : String, _ secondNum : String){
         if let num1 = Double(firstNum), let num2 = Double(secondNum), num2 != 0{
-            display = String(format: "%.2f", num1/num2)
+            var result = num1/num2
+            display = String(result)
+            if display.contains(".0"){
+                var resultInt = Int(result)
+                display = String(resultInt)
+            }
+            
+            if display.count > 6{
+                display = String(format: "%.6f", result)
+            }
         }
         else{
             display = "Error"
         }
     }
     func subtractNums(_ firstNum : String, _ secondNum : String){
-        if !firstNum.contains(".") && !secondNum.contains("."){
-            if let num1 = Int(firstNum), let num2 = Int(secondNum){
-                display = String(num1 - num2)
-            }
-        }
-        else{
-            if let num1 = Double(firstNum), let num2 = Double(secondNum){
-                display = String(num1 - num2)
-            }
+        if let num1 = Double(firstNum), let num2 = Double(secondNum){
+            display = String(num1 - num2)
         }
     }
     
     func multiplyNums(_ firstNum : String, _ secondNum : String){
-        if !firstNum.contains(".") && !secondNum.contains("."){
-            if let num1 = Int(firstNum), let num2 = Int(secondNum){
-                display = String(num1 * num2)
+        if let num1 = Double(firstNum), let num2 = Double(secondNum){
+            var result = num1 * num2
+            display = String(result)
+            if display.contains(".0"){
+                var resultInt = Int(result)
+                display = String(resultInt)
             }
-        }
-        else{
-            if let num1 = Double(firstNum), let num2 = Double(secondNum){
-                display = String(format: "%.2f", num1 * num2)
+            if display.count > 6{
+                display = String(format: "%.5f", result)
             }
         }
     }
+    
     func addNums(_ firstNum : String, _ secondNum : String){
-        if !firstNum.contains(".") && !secondNum.contains("."){
-            if let num1 = Int(firstNum), let num2 = Int(secondNum){
-                display = String(num1 + num2)
-            }
-        }
-        else{
             if let num1 = Double(firstNum), let num2 = Double(secondNum){
                 display = String(num1 + num2)
             }
         }
     }
-}
+
     
 
 #Preview {
