@@ -31,8 +31,8 @@ struct ContentView: View {
                     Text(display)
                         .padding(.trailing, 40) //make the 0 to the right of the display
                         .foregroundColor(.white)
-                        .font(.system(size: display.count > 6 ? 78 : 88, weight: .light)) //if the number is more than 6 digits then decrease the size
-                        .lineLimit(1)
+                        .font(.system(size: display.count > 6 ? 73 : 88, weight: .light)) //if the number is more than 6 digits then decrease the size
+                        .lineLimit(1) //make the number appears only in 1 line
                 }
                 ForEach(numsAndOperations, id: \.self){row in //access the row in the 2D array
                     HStack{ //align the each row horizontally
@@ -44,45 +44,45 @@ struct ContentView: View {
                                     operationCalc(char)
                                     isClicked = char //change the isClicked to the button that is clicked
                                 })
-                                    .frame(width: 80, height: 80)
-                                    .background(isClicked == char && isOperator ? Color.white : Color.orange) //if the clicked button is an operation then change the background to white
-                                    .cornerRadius(100)
-                                    .foregroundColor(isClicked == char && isOperator ? Color.orange : Color.white) //if the clicked button is an operation then change the font to orange
-                                    .font(.system(size: 32))
-                                    .animation(.easeInOut(duration: 0.4), value: isClicked) //when isClicked changes value, animation will work
+                                .frame(width: 80, height: 80)
+                                .background(isClicked == char && isOperator ? Color.white : Color.orange) //if the clicked button is an operation then change the background to white
+                                .cornerRadius(100)
+                                .foregroundColor(isClicked == char && isOperator ? Color.orange : Color.white) //if the clicked button is an operation then change the font to orange
+                                .font(.system(size: 32))
+                                .animation(.easeInOut(duration: 0.4), value: isClicked) //when isClicked changes value, animation will work
                                 
                             case "1"..."9", "." : //manage when numbers and "."
                                 Button(char, action: {
                                     manageBtn(char)
                                     isClicked = nil //reset the isClicked
                                 })
-                                    .frame(width: 80, height: 80)
-                                    .background(Color(UIColor.darkGray))
-                                    .cornerRadius(100)
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 32))
+                                .frame(width: 80, height: 80)
+                                .background(Color(UIColor.darkGray))
+                                .cornerRadius(100)
+                                .foregroundColor(.white)
+                                .font(.system(size: 32))
                             case "0" : //style 0 button differently
                                 Button(char, action: {
                                     manageBtn(char)
                                     isClicked = nil
                                 })
-                                    .padding(.leading, 30)
-                                    .frame(width: 170, height: 80, alignment: .leading)
-                                    .background(Color(UIColor.darkGray))
-                                    .cornerRadius(100)
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 32))
+                                .padding(.leading, 30)
+                                .frame(width: 170, height: 80, alignment: .leading)
+                                .background(Color(UIColor.darkGray))
+                                .cornerRadius(100)
+                                .foregroundColor(.white)
+                                .font(.system(size: 32))
                                 
                             default: //manage AC, +/- or % are clicked
                                 Button(char, action: {
                                     manageBtn(char)
                                     isClicked = nil
                                 })
-                                    .frame(width: 80, height: 80)
-                                    .background(Color(UIColor.lightGray))
-                                    .cornerRadius(100)
-                                    .foregroundColor(.black)
-                                    .font(.system(size: 32))
+                                .frame(width: 80, height: 80)
+                                .background(Color(UIColor.lightGray))
+                                .cornerRadius(100)
+                                .foregroundColor(.black)
+                                .font(.system(size: 32))
                             }
                         }
                     }
@@ -151,15 +151,11 @@ struct ContentView: View {
     
     func divideNums(_ firstNum : String, _ secondNum : String){
         if let num1 = Double(firstNum), let num2 = Double(secondNum), num2 != 0{
-            var result = num1/num2
+            let result = num1/num2
             display = String(result)
-            if display.contains(".0"){
-                var resultInt = Int(result)
-                display = String(resultInt)
-            }
             
-            if display.count > 6{
-                display = String(format: "%.6f", result)
+            if result.truncatingRemainder(dividingBy: 1) == 0{
+                display = String(Int(result))
             }
         }
         else{
@@ -168,31 +164,37 @@ struct ContentView: View {
     }
     func subtractNums(_ firstNum : String, _ secondNum : String){
         if let num1 = Double(firstNum), let num2 = Double(secondNum){
-            display = String(num1 - num2)
+            let result = num1 - num2
+            display = String(result)
+            
+            if result.truncatingRemainder(dividingBy: 1) == 0{
+                display = String(Int(result))
+            }
         }
     }
     
     func multiplyNums(_ firstNum : String, _ secondNum : String){
         if let num1 = Double(firstNum), let num2 = Double(secondNum){
-            var result = num1 * num2
+            let result = num1 * num2
             display = String(result)
-            if display.contains(".0"){
-                var resultInt = Int(result)
-                display = String(resultInt)
-            }
-            if display.count > 6{
-                display = String(format: "%.5f", result)
+            
+            if result.truncatingRemainder(dividingBy: 1) == 0{
+                display = String(Int(result))
             }
         }
     }
     
     func addNums(_ firstNum : String, _ secondNum : String){
-            if let num1 = Double(firstNum), let num2 = Double(secondNum){
-                display = String(num1 + num2)
+        if let num1 = Double(firstNum), let num2 = Double(secondNum){
+            let result = num1 + num2
+            display = String(result)
+            
+            if result.truncatingRemainder(dividingBy: 1) == 0{
+                display = String(Int(result))
             }
         }
     }
-
+}
     
 
 #Preview {
