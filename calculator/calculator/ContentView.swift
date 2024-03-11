@@ -73,7 +73,7 @@ struct ContentView: View {
                                 .foregroundColor(.white)
                                 .font(.system(size: 32))
                                 
-                            default: //manage AC, +/- or % are clicked
+                            default: //manage and style AC, +/- or % are clicked
                                 Button(char, action: {
                                     manageBtn(char)
                                     isClicked = nil
@@ -90,84 +90,87 @@ struct ContentView: View {
             }
         )
     }
-    func operationCalc(_ char : String){
+    func operationCalc(_ char : String){ //manage the operation buttons
         switch char{
-        case "÷", "x", "-", "+":
-            operations = char
-            firstNum = display
-            display = "0"
-            
-        default:
-            secondNum = display
-            manageOperations()
+        case "÷", "x", "-", "+": //when operation buttons are clicked
+            operations = char //store the operation that is clicked
+            firstNum = display //store the first num
+            display = "0" //reset the display
+        default: //when the "=" button is clicked
+            secondNum = display //store the second num
+            manageOperations() //call the func to do the calculation
         }
     }
     
     func manageOperations(){
-        if !firstNum.isEmpty && !secondNum.isEmpty{
+        if !firstNum.isEmpty && !secondNum.isEmpty{ //if first and second nums are entered
             switch operations{
             case "÷" :
-                divideNums(firstNum, secondNum)
+                divideNums(firstNum, secondNum) //call func to deal with dividing
             case "-" :
-                subtractNums(firstNum, secondNum)
+                subtractNums(firstNum, secondNum) //call func to deal with subtracting
             case "x" :
-                multiplyNums(firstNum, secondNum)
+                multiplyNums(firstNum, secondNum) //call func to deal with multiplying
             case "+" :
-                addNums(firstNum, secondNum)
+                addNums(firstNum, secondNum) //call func to deal with adding
             default:
                 break
             }
         }
     }
     
-    func manageBtn(_ char : String){
-        if let _ = Int(char){
-            if display == "0"{
-                display = char
+    func manageBtn(_ char : String){ //manage all the numbers and "." buttons
+        if let _ = Int(char){ //convert the char to int
+            numsAndOperations[0][0] = "C" //change AC button to C when numbers are entered
+            if display == "0"{ //if the display is 0
+                display = char //display will change to new numbers that are entered
             }
             else{
-                display += char
+                display += char //add numbers to the display
             }
         }
-        if char == "."{
-            display += char
+        if char == "."{ //if "." is entered
+            numsAndOperations[0][0] = "C" //change AC button to C
+            display += char //add it to the previous numbers
         }
-        else if char == "AC"{
+        else if char == "AC" || char == "C"{ //if AC is clicked
+            //reset the variables to do the calculation
             display = "0"
             firstNum = ""
             secondNum = ""
+            numsAndOperations[0][0] = "AC"
         }
-        else if char == "+/-" && display != "0"{
-            if let number = Int(display){
-                display = String(-number)
+        else if char == "+/-" && display != "0"{ //if +/- is clicked and the display is not 0
+            if let number = Int(display){ //convert the display num to int
+                display = String(-number) //make the num to the opposite sign of that num
             }
         }
-        else if char == "%"{
-            if let num = Double(display){
-                display = String(num/100)
+        else if char == "%"{ //if % is clicked
+            if let num = Double(display){ //convert the display num to double
+                display = String(num/100) //divide the num by 100 to convert num to a percentage
             }
         }
     }
     
     func divideNums(_ firstNum : String, _ secondNum : String){
-        if let num1 = Double(firstNum), let num2 = Double(secondNum), num2 != 0{
-            let result = num1/num2
-            display = String(result)
+        if let num1 = Double(firstNum), let num2 = Double(secondNum), num2 != 0{ //if the num2 is not 0
+            let result = num1/num2 //divide num1 by num2
+            display = String(result) //display the result
             
-            if result.truncatingRemainder(dividingBy: 1) == 0{
+            if result.truncatingRemainder(dividingBy: 1) == 0{ //if the result is a whole number, then convert it to int
                 display = String(Int(result))
             }
         }
-        else{
+        else{ //if num2 is 0, then it will show error
             display = "Error"
         }
     }
     func subtractNums(_ firstNum : String, _ secondNum : String){
-        if let num1 = Double(firstNum), let num2 = Double(secondNum){
+        if let num1 = Double(firstNum), let num2 = Double(secondNum){ //convert num1 and num2 to double to handle desmos
             let result = num1 - num2
             display = String(result)
             
-            if result.truncatingRemainder(dividingBy: 1) == 0{
+            if result.truncatingRemainder(dividingBy: 1) == 0{ //check if the result is whole number
                 display = String(Int(result))
             }
         }
@@ -178,7 +181,7 @@ struct ContentView: View {
             let result = num1 * num2
             display = String(result)
             
-            if result.truncatingRemainder(dividingBy: 1) == 0{
+            if result.truncatingRemainder(dividingBy: 1) == 0{ //check if the result is whole number
                 display = String(Int(result))
             }
         }
@@ -189,7 +192,7 @@ struct ContentView: View {
             let result = num1 + num2
             display = String(result)
             
-            if result.truncatingRemainder(dividingBy: 1) == 0{
+            if result.truncatingRemainder(dividingBy: 1) == 0{ //check if the result is whole number
                 display = String(Int(result))
             }
         }
